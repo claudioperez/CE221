@@ -145,7 +145,7 @@ def create_model(walk_edge=False):
     # model.load(side2, 0.0, -0.25, 0.0, 0.0, 0.0, 0.0, pattern=1)
     
     # 2) define uniform pressure p (force per area)
-    p = 1,5  # e.g. kips/ft²
+    p = 1.5  # e.g. kips/ft²
 
     # 3) loop over elements and distribute to nodes
     ele_tags = model.getEleTags()    # returns a Python list of all element IDs
