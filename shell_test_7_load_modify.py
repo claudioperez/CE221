@@ -6,7 +6,7 @@
 
 # ############################
 # # Start of model generation#
-# ############################
+# ###########################
 
 # def create_model(walk_edge=False):
 #     # Create ModelBuilder: 3 dimensions, 6 DOF per node
