@@ -1,0 +1,6 @@
+opensees
+scipy
+numpy
+xara
+veux
+mdof
