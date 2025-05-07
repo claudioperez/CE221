@@ -15,8 +15,8 @@ def create_model(walk_edge=False):
     E = 3.0e3  # Elastic modulus placeholder (kips/in^2)
 
     # Define materials and section
-    # ----------------------------------
-    cover_1, rebar, total = 2, 2, 12
+    # -------------------------------------------------------------------------------------------------------------------------------
+    cover_1, rebar, total = 0.1666, 0.1666, 1
     core = total - 2*cover_1 - 2*rebar
 
     model.eval(r"""
@@ -47,7 +47,7 @@ def create_model(walk_edge=False):
     model.section('Fiber', 5, '-GJ', 1.0)
     model.patch('rect', 6, 10, 10, -0.5, -0.5, 0.5, 0.5)
 
-    # Geometry
+    # Geometry--------------------------------------------------------------------------------------------------------------------------
     nx, ny = 10, 10
     points = {
         1: [ 0.0    , 0.0,  0.0],
@@ -62,6 +62,8 @@ def create_model(walk_edge=False):
     for nodes in surface.walk_edge():
         model.element('PrismFrame', None, nodes, section=5, vertical=[0, 0, 1])
 
+
+    #------------------------------------------------------------------------------------------------------------------------------
     # Boundary conditions
     model.fixZ( 0.0  , 1,1,1, 1,1,1)
     model.fixZ(72.111, 1,1,1, 1,1,1)
@@ -82,10 +84,16 @@ def create_model(walk_edge=False):
     fix_at(  0.0  , 0.0, 36.0555, tol=1e-1)
 
     return model
-
+#---------------------------------------------------------------------------------------------------------------------------------------
 def static_analysis(model, p):
     # Load pattern
-    model.pattern('Plain', 1, 'Linear')
+    #model.pattern('Plain', 1, 'Linear')
+    # 1) Define a linear ramp from 0 → 1
+    model.timeSeries('Linear', 1)
+
+    # 2) Create a plain load pattern that uses series tag=1
+    model.pattern('Plain', 1, 1)
+
     ele_tags = model.getEleTags()
     for ele in ele_tags:
         nids = model.eleNodes(ele)
@@ -102,8 +110,8 @@ def static_analysis(model, p):
     model.system('SparseGeneral', '-piv')
     model.analysis('Static')
     return model.analyze(1)
-##############################################################################################
 
+##############################################################################################
 
 if __name__ == '__main__':
     # First, write out the node coordinates once
@@ -119,7 +127,7 @@ if __name__ == '__main__':
 
     # Now ramp p until failure
     p     = 0   # starting pressure
-    dp    = 0.5    # pressure increment
+    dp    = 0.05    # pressure increment
     itr   = 1
     while True:
         model = create_model()
